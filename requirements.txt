@@ -24,3 +24,6 @@ celery
 redis
 
 flake8
+
+
+sentry-sdk

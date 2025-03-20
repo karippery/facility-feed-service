@@ -17,7 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+
+def trigger_error(request):
+    pass
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("feed_service/", include("feed_service.urls")),
+    path('sentry-debug/', trigger_error),
 ]
