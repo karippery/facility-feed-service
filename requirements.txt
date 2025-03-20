@@ -1,0 +1,24 @@
+# Django
+Django==4.2
+# REST Framework
+djangorestframework==3.14.0
+asyncpg==0.27.0
+aioboto3==11.1.0
+gunicorn==21.2.0
+psycopg2-binary==2.9.7
+python-dotenv==1.0.0
+python-decouple
+
+# Data Generation
+faker
+
+django-filter 
+drf-yasg
+
+# Filtering
+django-filter
+
+django-cors-headers
+
+celery
+redis
