@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from feed_service.tasks import generate_facility_feed
 
+
 class Command(BaseCommand):
     help = "Generate facility feed files and metadata file via Celery."
 

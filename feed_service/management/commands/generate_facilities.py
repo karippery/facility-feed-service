@@ -7,6 +7,7 @@ from feed_service.models import Facility
 
 fake = Faker()
 
+
 class Command(BaseCommand):
     help = "Generate 10,000 fake facility records"
 

@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -152,6 +151,6 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
-#feed output directory
+# feed output directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 FEED_OUTPUT_DIR = BASE_DIR / "feed_output"  # Directory for feed files

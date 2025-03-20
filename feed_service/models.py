@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Facility(models.Model):
     name = models.CharField(max_length=255, db_index=True)  # Frequently searched field
     phone = models.CharField(max_length=20)
