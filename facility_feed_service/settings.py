@@ -12,6 +12,27 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.celery import CeleryIntegration
+from dotenv import load_dotenv
+
+# Load .env file
+env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
+load_dotenv(env_path)
+
+
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    integrations=[
+        DjangoIntegration(),
+        CeleryIntegration()
+    ],
+    traces_sample_rate=1.0,  # Adjust sampling rate for performance monitoring
+    # Add data like request headers and IP for users,
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    send_default_pii=True,
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -154,3 +175,4 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 # feed output directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 FEED_OUTPUT_DIR = BASE_DIR / "feed_output"  # Directory for feed files
+
