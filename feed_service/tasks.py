@@ -6,6 +6,7 @@ from celery import shared_task
 from django.conf import settings
 from feed_service.models import Facility
 
+
 @shared_task
 def generate_facility_feed():
     """Generate facility feed files and metadata file."""
@@ -48,6 +49,7 @@ def generate_facility_feed():
         "feed_files": feed_files,
         "metadata_file": str(metadata_filepath),
     }
+
 
 def transform_record(record):
     """Transform a facility record into the required JSON format."""
