@@ -27,3 +27,6 @@ flake8
 
 
 sentry-sdk
+
+pytest
+pytest-django
