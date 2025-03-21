@@ -2,6 +2,7 @@
 Django==4.2
 # REST Framework
 djangorestframework==3.14.0
+djangorestframework-simplejwt==5.2.2
 asyncpg==0.27.0
 aioboto3==11.1.0
 gunicorn==21.2.0
@@ -25,6 +26,8 @@ redis
 
 flake8
 
+drf-yasg==1.21.7
+drf-spectacular
 
 sentry-sdk
 

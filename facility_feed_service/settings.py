@@ -49,6 +49,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'users.User'
+
 DJANGO_FILTERS_DISABLE_HTML = True
 
 # Application definition
@@ -60,8 +62,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "rest_framework_simplejwt",
+    'drf_yasg',
     'rest_framework',
     'feed_service',
+    'users',
     'django_filters',
 ]
 
