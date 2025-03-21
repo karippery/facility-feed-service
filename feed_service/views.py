@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class FacilityListCreateView(generics.ListCreateAPIView):
-    queryset = Facility.objects.all().order_by("id").select_related().defer("url")
+    queryset = Facility.objects.all().order_by("id")
     serializer_class = FacilitySerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     search_fields = ["name", "street_address", "postal_code"]
