@@ -63,7 +63,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "rest_framework_simplejwt",
-    'drf_yasg',
+    'drf_spectacular',
     'rest_framework',
     'feed_service',
     'users',
@@ -159,6 +159,15 @@ USE_TZ = True
 STATIC_URL = "/static/"
 
 
+SPECTACULAR_SETTINGS = {
+    "TITLE": os.environ.get("APP_NAME"),
+    "DESCRIPTION": os.environ.get("APP_DESCRIPTION"),
+    "VERSION": os.environ.get("APP_VERSION"),
+    "AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+}
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -166,6 +175,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 
@@ -180,4 +190,5 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 # feed output directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 FEED_OUTPUT_DIR = BASE_DIR / "feed_output"  # Directory for feed files
+
 
