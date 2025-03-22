@@ -38,7 +38,7 @@ A Django application designed to generate JSON feed files from facility data sto
 
 5. **Populate Fake Data** 
 
-    ``` docker exec -it facility_feed_service python manage.py populate_facilities ```
+    ``` docker exec -it facility_feed_service python manage.py generate_feed ```
 6. 
 7. 
 

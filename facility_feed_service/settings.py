@@ -112,6 +112,8 @@ WSGI_APPLICATION = 'facility_feed_service.wsgi.application'
 #     }
 # }
 
+
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgres://postgres:password@localhost:5432/mydatabase')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -120,6 +122,7 @@ DATABASES = {
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'postgres'),
         'HOST': 'db',
         'PORT': '5432',
+        
     }
 }
 
