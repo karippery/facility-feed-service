@@ -16,14 +16,33 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
+from django.shortcuts import redirect
+from decouple import config
+
+APP_NAME_API = config("APP_NAME_API", default="default_app_name")
+API_VERSION = config("API_VERSION", default="v1")
 
 
 def trigger_error(request):
     pass
 
 
+def redirect_to_swagger(request):
+    return redirect("schema-swagger-ui")
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("feed_service/", include("feed_service.urls")),
+    path("users/", include("users.urls")),
+    path(f"{APP_NAME_API}/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="schema-swagger-ui"),
+    path("api/schema/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+    path("", redirect_to_swagger),
     path('sentry-debug/', trigger_error),
 ]

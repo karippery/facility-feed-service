@@ -16,6 +16,7 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
 from dotenv import load_dotenv
+from datetime import timedelta
 
 # Load .env file
 env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
@@ -49,6 +50,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'users.User'
+
 DJANGO_FILTERS_DISABLE_HTML = True
 
 # Application definition
@@ -60,8 +63,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "rest_framework_simplejwt",
+    'drf_spectacular',
     'rest_framework',
     'feed_service',
+    'users',
     'django_filters',
 ]
 
@@ -154,6 +160,15 @@ USE_TZ = True
 STATIC_URL = "/static/"
 
 
+SPECTACULAR_SETTINGS = {
+    "TITLE": os.environ.get("APP_NAME"),
+    "DESCRIPTION": os.environ.get("APP_DESCRIPTION"),
+    "VERSION": os.environ.get("APP_VERSION"),
+    "AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+}
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -161,6 +176,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework_simplejwt.authentication.JWTAuthentication'],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'],
 }
 
 
@@ -176,3 +194,13 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 BASE_DIR = Path(__file__).resolve().parent.parent
 FEED_OUTPUT_DIR = BASE_DIR / "feed_output"  # Directory for feed files
 
+
+# JWT Configuration
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}

@@ -12,6 +12,9 @@ class Facility(models.Model):
     region = models.CharField(max_length=100, db_index=True)
     postal_code = models.CharField(max_length=20, db_index=True)  # Searching by postal code
     street_address = models.CharField(max_length=255)
+    
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         indexes = [

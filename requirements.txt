@@ -1,32 +1,35 @@
-# Django
-Django==4.2
-# REST Framework
-djangorestframework==3.14.0
-asyncpg==0.27.0
-aioboto3==11.1.0
-gunicorn==21.2.0
-psycopg2-binary==2.9.7
-python-dotenv==1.0.0
-python-decouple
+# Core Django and Web Framework
+Django==4.2                    # Django web framework
+gunicorn==21.2.0              # WSGI server for production
+python-dotenv==1.0.0          # Environment variable management
+python-decouple               # Simplifies configuration via environment variables
 
-# Data Generation
-faker
+# Django REST Framework and API Tools
+djangorestframework==3.14.0   # REST framework for Django
+djangorestframework-simplejwt==5.2.2  # JWT authentication for DRF
+drf-spectacular               # OpenAPI 3.0 schema generation (preferred over drf-yasg)
+drf-spectacular[swagger-ui]   # Swagger UI support for drf-spectacular
+django-cors-headers           # CORS support for API
 
-django-filter 
-drf-yasg
+# Database and Asynchronous Libraries
+psycopg2-binary==2.9.7        # PostgreSQL adapter for Python
+asyncpg==0.27.0              # Asynchronous PostgreSQL driver
+aioboto3==11.1.0             # Async AWS SDK for Python (e.g., S3 integration)
 
-# Filtering
-django-filter
+# Filtering and Query Enhancement
+django-filter                 # Filtering support for Django and DRF
 
-django-cors-headers
+# Task Queue and Caching
+celery                        # Distributed task queue
+redis                         # Redis client (used as Celery broker/cache)
 
-celery
-redis
+# Testing and Quality Assurance
+pytest                        # Testing framework
+pytest-django                 # Django integration for pytest
+flake8                        # Code style enforcement and linting
 
-flake8
+# Monitoring and Error Tracking
+sentry-sdk                    # Real-time error tracking and monitoring
 
-
-sentry-sdk
-
-pytest
-pytest-django
+# Data Generation and Utilities
+faker                         # Fake data generation for testing/development
