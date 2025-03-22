@@ -12,6 +12,22 @@ jobs:
   lint_and_test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: mydatabase
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        # Ensure the database is ready before running tests
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -32,9 +48,14 @@ jobs:
           flake8 .
 
       - name: Set environment variables
-        run: echo "DJANGO_SETTINGS_MODULE=facility_feed_service.settings" >> $GITHUB_ENV
+        run: |
+          echo "DJANGO_SETTINGS_MODULE=facility_feed_service.settings" >> $GITHUB_ENV
+          echo "POSTGRES_DB=mydatabase" >> $GITHUB_ENV
+          echo "POSTGRES_USER=postgres" >> $GITHUB_ENV
+          echo "POSTGRES_PASSWORD=password" >> $GITHUB_ENV
+          echo "DB_HOST=localhost" >> $GITHUB_ENV
 
       - name: Run tests with pytest
         run: |
-          pip install pytest
+          pip install pytest pytest-django psycopg2-binary
           pytest
