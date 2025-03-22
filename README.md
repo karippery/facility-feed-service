@@ -1,5 +1,5 @@
 # Facility Feed Service
-A Django application designed to generate JSON feed files from facility data stored in a PostgreSQL database, accompanied by a metadata file. The service processes data in chunks, and is fully containerized using Docker with Celery for asynchronous task execution and Redis as a message broker.
+The Facility Feed Service is a Django-based application designed to generate and manage JSON feed files from facility data stored in a PostgreSQL database. It processes data in chunks for efficiency, compresses feeds with gzip, and uploads them to AWS S3 using asynchronous operations powered by asyncio, asyncpg, and aioboto3. The service integrates Celery for task management, Redis as a message broker, and Docker for containerization, ensuring scalability and consistency. Enhanced with Sentry for error tracking, JWT for secure authentication, and Swagger UI for API documentation, it provides a robust, secure, and developer-friendly solution for delivering structured facility feeds to downstream consumers.
 
 ## Overview
 - **Purpose**: Generate and upload JSON feeds of facility data in gzip format to AWS S3.
@@ -49,51 +49,54 @@ The application is split into multiple Docker containers, each handling a specif
  Access the Django server at http://localhost:8000 (or custom DJANGO_PORT).
 
 ## How to Generate Data
-Generate Fake Data
+
+### Generate Fake Data
 Use the Django management command to create 10,000 fake facility records with Faker:
 
-      ``` docker-compose exec facility_feed_service python manage.py generate_fake_facilities ``` 
-
+```bash
+docker-compose exec facility_feed_service python manage.py generate_fake_facilities
+```
 This populates the PostgreSQL database with test data (e.g., names, addresses, coordinates).
 
 ## How to Upload JSON Gzip Files to AWS S3
 Trigger Feed Generation
 Queue the feed generation task via Celery:
-
-    ```docker-compose exec facility_feed_service python manage.py generate_feed``` 
+```bash
+docker-compose exec facility_feed_service python manage.py generate_feed
+```
 
 ## Approach
 
-1. Initiate the Process
+1. **Initiate the Process**
    - Trigger: The workflow begins when a user runs the Django management command python manage.py generate_feed.
    - Action: This queues a Celery task (generate_facility_feed) to handle the feed generation and upload asynchronously, keeping the main application responsive.
 
-2. Read Facility Data from PostgreSQL
+2. **Read Facility Data from PostgreSQL**
    - Source: Facility data (e.g., name, phone, location) is stored in a PostgreSQL database in the Facility model.
    - Chunked Retrieval: The Celery task uses asyncpg to fetch data in chunks (default: 100 records at a time) via an asynchronous query:
    - SQL: SELECT ... FROM feed_service_facility LIMIT 100 OFFSET <offset>.
    - The offset increments with each chunk (0, 100, 200, etc.) until all records are processed.
      Asynchronous database calls prevent blocking, allowing the system to handle large datasets efficiently.
 
-3. Transform Data into Structured JSON
+3. **Transform Data into Structured JSON**
    - Processing: For each chunk of 100 records:
    - The task loops through the retrieved rows and transforms each record into a structured JSON object using the transform_record function.
    - Output: Each chunk becomes a JSON object with a "data" key containing an array of these transformed records (e.g., {"data": [<record1>, <record2>, ...]}).
    - Why Structured?: The format ensures compatibility with downstream systems (e.g., Google Reserve), providing a consistent, machine-readable structure.
 
-4. Compress the JSON Feed
+4. **Compress the JSON Feed**
    - Compression: The JSON data for each chunk is encoded to UTF-8 and compressed using gzip to reduce file size.
    - Naming: Each compressed file is named dynamically (e.g., facility_feed_<timestamp + chunk_index>.json.gz), ensuring uniqueness and traceability.
    - Why Gzip?: Compression minimizes storage and transfer costs on AWS S3 while maintaining data integrity.
 
-5. Upload Feed Files to AWS S3
+5. **Upload Feed Files to AWS S3**
    - Async Upload: The compressed JSON data is uploaded directly to an AWS S3 bucket using aioboto3 in an asynchronous operation:
    - Target: s3://facility-feed-bucket-2025-interview/feeds/<filename>.
    - Headers: ContentType: application/json, ContentEncoding: gzip.
    - No Local Storage: Files are streamed to S3 without writing to disk, optimizing resource use.
    - Tracking: The task maintains a list of uploaded filenames (e.g., feed_files) for inclusion in the metadata
 
-6. Generate and Upload Metadata
+6. **Generate and Upload Metadata**
 - **Creation**: Once all chunks are processed and uploaded:
   - A metadata JSON object is created:
 
@@ -108,7 +111,7 @@ Queue the feed generation task via Celery:
   - Upload: This metadata file is uploaded to S3 (uncompressed) at s3://facility-feed-bucket-2025-interview/feeds/metadata.json using the same async S3 client.
   - Why Metadata?: Provides context about the feed generation (e.g., when it happened, which files were created) for downstream consumers.
 
-7. Complete the Workflow
+7. **Complete the Workflow**
    - Result: The Celery task returns a status object (e.g., {"status": "success", "feed_files": [...], "metadata_file": "metadata.json"}).
    - Verification: Users can check the S3 bucket to confirm the presence of feed files and metadata.
   
