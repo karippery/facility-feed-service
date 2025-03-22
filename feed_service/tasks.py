@@ -38,13 +38,11 @@ async def upload_json_to_s3(data: dict, s3_key: str, is_gzipped: bool = False):
         aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
     ) as s3_client:
         json_data = json.dumps(data, ensure_ascii=False)
-        
         if is_gzipped:
             json_data = gzip.compress(json_data.encode("utf-8"))
             extra_args = {"ContentType": "application/json", "ContentEncoding": "gzip"}
         else:
             extra_args = {"ContentType": "application/json"}
-        
         await s3_client.put_object(
             Bucket=S3_BUCKET_NAME,
             Key=s3_key,
@@ -69,7 +67,6 @@ def generate_facility_feed():
         feed_data = {"data": [transform_record(record) for record in facilities]}
         filename = f"facility_feed_{timestamp + offset // CHUNK_SIZE}.json.gz"
         s3_key = f"feeds/{filename}"
-        
         # Upload JSON data directly to S3
         asyncio.run(upload_json_to_s3(feed_data, s3_key, is_gzipped=True))
         feed_files.append(filename)

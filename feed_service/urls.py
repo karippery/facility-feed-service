@@ -5,5 +5,4 @@ from feed_service.views import FacilityListCreateView, FacilityRetrieveUpdateDes
 urlpatterns = [
     path('', FacilityListCreateView.as_view(), name='facility-list-create'),
     path('<int:pk>/', FacilityRetrieveUpdateDestroyView.as_view(), name='facility-retrieve-update-destroy'),
-
 ]

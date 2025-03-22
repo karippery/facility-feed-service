@@ -1,3 +1,4 @@
+
 import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
@@ -49,7 +50,6 @@ def test_create_superuser(create_superuser):
 def test_user_list_api(api_client, create_user):
     create_user(email='test1@example.com', first_name='User1', last_name='Test', password='password123', role=Userroles.Customer)
     create_user(email='test2@example.com', first_name='User2', last_name='Test', password='password123', role=Userroles.Customer)
-    
     response = api_client.get("/users/")
     assert response.status_code == status.HTTP_401_UNAUTHORIZED  # Requires authentication
 
