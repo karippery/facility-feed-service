@@ -10,7 +10,7 @@ on:
     branches:
       - '*'
   workflow_dispatch:  # Manual trigger option
-  jobs:
+jobs:
   lint_and_test:
     runs-on: ubuntu-latest
 
