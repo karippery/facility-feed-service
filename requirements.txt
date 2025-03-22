@@ -33,3 +33,6 @@ sentry-sdk                    # Real-time error tracking and monitoring
 
 # Data Generation and Utilities
 faker                         # Fake data generation for testing/development
+
+# AWS
+aioboto3
