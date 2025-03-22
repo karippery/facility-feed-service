@@ -30,6 +30,42 @@ The Facility Feed Service is a Django-based application designed to generate and
     The application uses defaults if no .env is provided. To customize settings, create a .env file in the project root:
     **Note:** .env is ignored by .gitignore—do not commit it.
 
+    # .env.sample
+
+        # Application Metadata
+        APP_NAME="Facility Feed Service"
+        APP_NAME_API="facility-feed-service"
+        APP_DESCRIPTION="A service to generate and upload facility feed files to AWS S3"
+        APP_VERSION="1.0.0"
+
+        # PostgreSQL Configuration
+        POSTGRES_DB=postgres
+        POSTGRES_USER=postgres
+        POSTGRES_PASSWORD=postgres
+        POSTGRES_PORT=5433
+        DB_HOST=db
+        DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+
+        # Redis Configuration
+        REDIS_PORT=6379
+        CELERY_BROKER_URL=redis://redis:6379/0
+        CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+        # Django Configuration
+        DJANGO_PORT=8000
+        DJANGO_SETTINGS_MODULE=facility_feed_service.settings
+
+        # Feed Processing
+        FEED_CHUNK_SIZE=100
+
+        # Sentry Configuration
+        SENTRY_DSN=https://your-sentry-dsn@example.com
+
+        # AWS Configuration
+        AWS_S3_BUCKET_NAME=your-s3-bucket-name
+        AWS_ACCESS_KEY_ID=your-aws-access-key-id
+        AWS_SECRET_ACCESS_KEY=your-aws-secret-access-key
+
 ## Containerization Approach
 
 The application is split into multiple Docker containers, each handling a specific component of the system, orchestrated via Docker Compose. The key services are:
