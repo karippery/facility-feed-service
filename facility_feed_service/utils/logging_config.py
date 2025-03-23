@@ -13,7 +13,6 @@ def setup_logging():
     )
     logger = logging.getLogger(__name__)
 
-    # Optionally, configure log file handling
     log_file = os.getenv("LOG_FILE", "app.log")
     file_handler = logging.FileHandler(log_file)
     file_handler.setFormatter(logging.Formatter(log_format))
