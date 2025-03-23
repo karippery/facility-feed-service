@@ -70,6 +70,9 @@ def generate_facility_feed():
     feed_files = []
     offset = 0
 
+    # Create a unique folder for the feed based on the timestamp
+    feed_timestamp_folder = f"feeds/{timestamp}"
+
     while True:
         facilities = asyncio.run(fetch_facilities(offset))
         if not facilities:
@@ -79,7 +82,10 @@ def generate_facility_feed():
         # Transform records and prepare JSON data
         feed_data = {"data": [transform_record(record) for record in facilities]}
         filename = f"facility_feed_{timestamp + offset // CHUNK_SIZE}.json.gz"
-        s3_key = f"feeds/{filename}"
+        
+        # S3 key now includes the timestamp folder
+        s3_key = f"{feed_timestamp_folder}/{filename}"
+        
         # Upload JSON data directly to S3
         asyncio.run(upload_json_to_s3(feed_data, s3_key, is_gzipped=True))
         feed_files.append(filename)
@@ -92,8 +98,11 @@ def generate_facility_feed():
         "name": "reservewithgoogle.entity",
         "data_file": feed_files,
     }
-    metadata_key = "feeds/metadata.json"
+
+    # Metadata file will also go into the timestamped folder
+    metadata_key = f"{feed_timestamp_folder}/metadata.json"
     asyncio.run(upload_json_to_s3(metadata, metadata_key, is_gzipped=False))
+
     logger.info(f"Generated feed files: {feed_files} and metadata file: {metadata_key}")
     return {"status": "success", "feed_files": feed_files, "metadata_file": "metadata.json"}
 
