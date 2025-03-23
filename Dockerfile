@@ -16,5 +16,5 @@ COPY . .
 # Expose the port Django runs on
 EXPOSE 8000
 
-# Default command to run the application
-CMD ["gunicorn", "facility_feed.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Set the entrypoint script
+ENTRYPOINT ["sh", "./entrypoint.sh"]

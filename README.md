@@ -19,7 +19,6 @@ The Facility Feed Service is a Django-based application designed to generate and
 - [Git](https://git-scm.com/downloads)
 - Python 3.10 (optional, for local development outside Docker)
 
-### Steps
 
 1. **Clone the Repository**
    ```bash
@@ -179,8 +178,38 @@ The pipeline is triggered on code pushes, pull requests, or manual dispatch, run
    - Uses a PostgreSQL service for realistic testing.
 2. **Build and Push**
    - Runs only on `main` branch pushes, after successful linting and testing.
-   - Builds and pushes the Docker image to AWS ECR.
+   - Builds and pushes the Docker image to AWS ECR.  
   
+## Scheduled Execution on AWS ECS Fargate
+
+The Facility Feed Service is scheduled to run on AWS ECS Fargate as a task using the EventBridge (CloudWatch Events) mechanism. The service automatically generates and uploads JSON feed files to AWS S3 at regular intervals, as defined by a scheduled cron expression.
+
+### Steps Taken
+
+#### Task Definition:
+- Created a task definition in AWS ECS (`facility-feed-task`) that runs the **Facility Feed Service** container on Fargate.
+- Defined an environment variable `RUN_FEED_TASK` with the value `true` in the task definition to trigger the execution of the `generate_feed` management command.
+- **ECS Task Definitions Console**: [Task Definitions](https://eu-north-1.console.aws.amazon.com/ecs/v2/task-definitions?region=eu-north-1)
+
+#### Cron-Based Scheduling:
+- Configured an **EventBridge rule** (formerly CloudWatch Events) to schedule the ECS task using a cron expression. This allows the task to run automatically at specified times (e.g., daily at midnight).
+- **EventBridge Console**: [Scheduler](https://eu-north-1.console.aws.amazon.com/scheduler/home?region=eu-north-1#schedules)
+
+#### Container Image:
+- The ECS task uses a Docker container image (`facility-feed-service`) stored in Amazon ECR to run the service. The container includes the necessary application code and dependencies.
+- **ECS Clusters Console**: [Clusters](https://eu-north-1.console.aws.amazon.com/ecs/v2/clusters?region=eu-north-1)
+
+#### Execution:
+- When triggered by the EventBridge rule, the ECS task runs the `generate_feed` Django management command. This command processes facility data and uploads JSON feed files to an S3 bucket.
+
+#### S3 Bucket:
+- The task uploads the generated feed files to an existing S3 bucket (`facility-feed-bucket-2025-interview`).
+- **S3 Console**: [S3 Buckets](https://eu-north-1.console.aws.amazon.com/s3/buckets?bucketType=general&region=eu-north-1#)
+
+#### Logging:
+- Configured **CloudWatch Logs** for monitoring task execution. Logs are stored in the log group `/ecs/facility-feed-task` to track the status of each task run.
+- **CloudWatch Logs Console**: [Logs](https://eu-north-1.console.aws.amazon.com/cloudwatch/home?region=eu-north-1#logs:)
+
 ##  Sentry, JWT, and Swagger UI
 
 The Facility Feed Service integrates **Sentry** for error tracking, **JWT** (JSON Web Tokens) for authentication, and **Swagger UI** (via `drf-spectacular`) for API documentation. These tools enhance monitoring, security, and usability of the application.
