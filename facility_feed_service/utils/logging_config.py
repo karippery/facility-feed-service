@@ -18,5 +18,4 @@ def setup_logging():
     file_handler = logging.FileHandler(log_file)
     file_handler.setFormatter(logging.Formatter(log_format))
     logger.addHandler(file_handler)
-    
     return logger
