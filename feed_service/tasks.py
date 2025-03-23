@@ -21,7 +21,6 @@ logger = setup_logging()
 
 async def fetch_facilities(offset: int = 0) -> list:
     """Fetch a chunk of facility records from the database."""
-    
     try:
         conn = await asyncpg.connect(dsn=settings.DATABASE_URL)
         logger.info(f"Fetching facilities with offset: {offset}")
@@ -82,10 +81,8 @@ def generate_facility_feed():
         # Transform records and prepare JSON data
         feed_data = {"data": [transform_record(record) for record in facilities]}
         filename = f"facility_feed_{timestamp + offset // CHUNK_SIZE}.json.gz"
-        
         # S3 key now includes the timestamp folder
         s3_key = f"{feed_timestamp_folder}/{filename}"
-        
         # Upload JSON data directly to S3
         asyncio.run(upload_json_to_s3(feed_data, s3_key, is_gzipped=True))
         feed_files.append(filename)
