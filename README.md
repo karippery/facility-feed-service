@@ -10,6 +10,7 @@ The Facility Feed Service is a Django-based application designed to generate and
   - Compresses feed files with gzip.
   - Dockerized for consistent deployment.
   - CI/CD via GitHub Actions to AWS ECR.
+  - Scheduled Execution on AWS ECS Fargate
 
 ## Setup Instructions
 
