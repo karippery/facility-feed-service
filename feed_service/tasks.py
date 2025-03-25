@@ -63,7 +63,7 @@ async def upload_json_to_s3(data: dict, s3_key: str, is_gzipped: bool = False):
 
 
 @shared_task
-def generate_facility_feed():
+async def generate_facility_feed():
     """Generate and upload facility feed files and metadata directly to AWS S3."""
     timestamp = int(time.time())
     feed_files = []
@@ -83,7 +83,7 @@ def generate_facility_feed():
         filename = f"facility_feed_{timestamp + offset // CHUNK_SIZE}.json.gz"
         s3_key = f"{feed_timestamp_folder}/{filename}"
         # Upload JSON data directly to S3
-        asyncio.run(upload_json_to_s3(feed_data, s3_key, is_gzipped=True))
+        await upload_json_to_s3(feed_data, s3_key, is_gzipped=True)
         feed_files.append(filename)
         offset += CHUNK_SIZE
 
