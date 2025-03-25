@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class FacilityListCreateView(generics.ListCreateAPIView):
+    """List all facilities or create a new one with filtering, searching, and ordering."""
     queryset = Facility.objects.all().order_by("id")
     serializer_class = FacilitySerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
