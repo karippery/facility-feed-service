@@ -38,9 +38,10 @@ services:
   facility_feed_service:
     container_name: facility_feed_service
     build: .
-    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
+    env_file:
+      - .env  
     ports:
       - "${DJANGO_PORT}:8000"
     depends_on:
@@ -49,7 +50,7 @@ services:
       redis:
         condition: service_healthy
     environment:
-      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
+      - DJANGO_SETTINGS_MODULE=facility_feed_service.settings
       - CELERY_BROKER_URL=${CELERY_BROKER_URL}
       - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
       - DATABASE_URL=${DATABASE_URL}
@@ -60,7 +61,7 @@ services:
   celery:
     container_name: facility_feed_service_celery
     build: .
-    command: celery -A facility_feed_service.celery worker --loglevel=info
+    command: sh -c "echo 'Celery command placeholder'"
     volumes:
       - .:/app
     depends_on:
@@ -73,6 +74,7 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - CELERY_BROKER_URL=${CELERY_BROKER_URL}
       - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+      - RUN_CELERY=true
     restart: always
     networks:
       - app_network
