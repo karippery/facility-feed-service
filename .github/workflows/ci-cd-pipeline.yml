@@ -10,6 +10,7 @@ on:
     branches:
       - '*'
   workflow_dispatch:  # Manual trigger option
+
 jobs:
   lint_and_test:
     runs-on: ubuntu-latest
@@ -75,7 +76,7 @@ jobs:
           files: ./coverage.xml
         if: success()
 
-  build_and_push:
+  build_docker_image:
     needs: lint_and_test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -83,17 +84,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2  # Updated to v2
 
       - name: Cache Docker layers
         uses: actions/cache@v3
@@ -105,13 +95,26 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build, tag, and push image to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: facility-feed-service
-          IMAGE_TAG: ${{ github.sha }}
+      - name: Build Docker image
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker build -t facility-feed-service:${{ github.sha }} .
+          docker tag facility-feed-service:${{ github.sha }} facility-feed-service:latest
+
+      # Uncomment and configure these when you have AWS access
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v2
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: ${{ secrets.AWS_REGION }}
+      #
+      # - name: Login to Amazon ECR
+      #   id: login-ecr
+      #   uses: aws-actions/amazon-ecr-login@v2
+      #
+      # - name: Push to Amazon ECR
+      #   run: |
+      #     docker tag facility-feed-service:${{ github.sha }} ${{ steps.login-ecr.outputs.registry }}/facility-feed-service:${{ github.sha }}
+      #     docker push ${{ steps.login-ecr.outputs.registry }}/facility-feed-service:${{ github.sha }}
+      #     docker tag facility-feed-service:${{ github.sha }} ${{ steps.login-ecr.outputs.registry }}/facility-feed-service:latest
+      #     docker push ${{ steps.login-ecr.outputs.registry }}/facility-feed-service:latest
